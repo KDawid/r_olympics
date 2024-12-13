@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Kelemen">
+
+<title>Olympics Athletes and Medals</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Olympics Athletes and Medals</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Kelemen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="setup-the-project" class="level1">
+<h1>Setup the project</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: a(z) 'purrr' csomag az R 4.4.2 verziójával lett fordítva</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_light</span>())</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">dplyr.print_max =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="read-the-data" class="level1">
+<h1>Read the data</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-08-06/olympics.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 271116 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (10): name, sex, team, noc, games, season, city, sport, event, medal
+dbl  (5): id, age, height, weight, year
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+</section>
+<section id="explore-the-dataset" class="level1">
+<h1>Explore the dataset</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 271,116
+Columns: 15
+$ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, …
+$ name   &lt;chr&gt; "A Dijiang", "A Lamusi", "Gunnar Nielsen Aaby", "Edgar Lindenau…
+$ sex    &lt;chr&gt; "M", "M", "M", "M", "F", "F", "F", "F", "F", "F", "M", "M", "M"…
+$ age    &lt;dbl&gt; 24, 23, 24, 34, 21, 21, 25, 25, 27, 27, 31, 31, 31, 31, 33, 33,…
+$ height &lt;dbl&gt; 180, 170, NA, NA, 185, 185, 185, 185, 185, 185, 188, 188, 188, …
+$ weight &lt;dbl&gt; 80, 60, NA, NA, 82, 82, 82, 82, 82, 82, 75, 75, 75, 75, 75, 75,…
+$ team   &lt;chr&gt; "China", "China", "Denmark", "Denmark/Sweden", "Netherlands", "…
+$ noc    &lt;chr&gt; "CHN", "CHN", "DEN", "DEN", "NED", "NED", "NED", "NED", "NED", …
+$ games  &lt;chr&gt; "1992 Summer", "2012 Summer", "1920 Summer", "1900 Summer", "19…
+$ year   &lt;dbl&gt; 1992, 2012, 1920, 1900, 1988, 1988, 1992, 1992, 1994, 1994, 199…
+$ season &lt;chr&gt; "Summer", "Summer", "Summer", "Summer", "Winter", "Winter", "Wi…
+$ city   &lt;chr&gt; "Barcelona", "London", "Antwerpen", "Paris", "Calgary", "Calgar…
+$ sport  &lt;chr&gt; "Basketball", "Judo", "Football", "Tug-Of-War", "Speed Skating"…
+$ event  &lt;chr&gt; "Basketball Men's Basketball", "Judo Men's Extra-Lightweight", …
+$ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(olympics_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       id             name               sex                 age       
+ Min.   :     1   Length:271116      Length:271116      Min.   :10.00  
+ 1st Qu.: 34643   Class :character   Class :character   1st Qu.:21.00  
+ Median : 68205   Mode  :character   Mode  :character   Median :24.00  
+ Mean   : 68249                                         Mean   :25.56  
+ 3rd Qu.:102097                                         3rd Qu.:28.00  
+ Max.   :135571                                         Max.   :97.00  
+                                                        NA's   :9474   
+     height          weight          team               noc           
+ Min.   :127.0   Min.   : 25.0   Length:271116      Length:271116     
+ 1st Qu.:168.0   1st Qu.: 60.0   Class :character   Class :character  
+ Median :175.0   Median : 70.0   Mode  :character   Mode  :character  
+ Mean   :175.3   Mean   : 70.7                                        
+ 3rd Qu.:183.0   3rd Qu.: 79.0                                        
+ Max.   :226.0   Max.   :214.0                                        
+ NA's   :60171   NA's   :62875                                        
+    games                year         season              city          
+ Length:271116      Min.   :1896   Length:271116      Length:271116     
+ Class :character   1st Qu.:1960   Class :character   Class :character  
+ Mode  :character   Median :1988   Mode  :character   Mode  :character  
+                    Mean   :1978                                        
+                    3rd Qu.:2002                                        
+                    Max.   :2016                                        
+                                                                        
+    sport              event              medal          
+ Length:271116      Length:271116      Length:271116     
+ Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character  
+                                                         
+                                                         
+                                                         
+                                                         </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>sex))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "F" "M"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>noc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "AFG" "AHO" "ALB" "ALG" "AND" "ANG" "ANT" "ANZ" "ARG" "ARM" "ARU" "ASA"
+ [13] "AUS" "AUT" "AZE" "BAH" "BAN" "BAR" "BDI" "BEL" "BEN" "BER" "BHU" "BIH"
+ [25] "BIZ" "BLR" "BOH" "BOL" "BOT" "BRA" "BRN" "BRU" "BUL" "BUR" "CAF" "CAM"
+ [37] "CAN" "CAY" "CGO" "CHA" "CHI" "CHN" "CIV" "CMR" "COD" "COK" "COL" "COM"
+ [49] "CPV" "CRC" "CRO" "CRT" "CUB" "CYP" "CZE" "DEN" "DJI" "DMA" "DOM" "ECU"
+ [61] "EGY" "ERI" "ESA" "ESP" "EST" "ETH" "EUN" "FIJ" "FIN" "FRA" "FRG" "FSM"
+ [73] "GAB" "GAM" "GBR" "GBS" "GDR" "GEO" "GEQ" "GER" "GHA" "GRE" "GRN" "GUA"
+ [85] "GUI" "GUM" "GUY" "HAI" "HKG" "HON" "HUN" "INA" "IND" "IOA" "IRI" "IRL"
+ [97] "IRQ" "ISL" "ISR" "ISV" "ITA" "IVB" "JAM" "JOR" "JPN" "KAZ" "KEN" "KGZ"
+[109] "KIR" "KOR" "KOS" "KSA" "KUW" "LAO" "LAT" "LBA" "LBR" "LCA" "LES" "LIB"
+[121] "LIE" "LTU" "LUX" "MAD" "MAL" "MAR" "MAS" "MAW" "MDA" "MDV" "MEX" "MGL"
+[133] "MHL" "MKD" "MLI" "MLT" "MNE" "MON" "MOZ" "MRI" "MTN" "MYA" "NAM" "NBO"
+[145] "NCA" "NED" "NEP" "NFL" "NGR" "NIG" "NOR" "NRU" "NZL" "OMA" "PAK" "PAN"
+[157] "PAR" "PER" "PHI" "PLE" "PLW" "PNG" "POL" "POR" "PRK" "PUR" "QAT" "RHO"
+[169] "ROT" "ROU" "RSA" "RUS" "RWA" "SAA" "SAM" "SCG" "SEN" "SEY" "SGP" "SKN"
+[181] "SLE" "SLO" "SMR" "SOL" "SOM" "SRB" "SRI" "SSD" "STP" "SUD" "SUI" "SUR"
+[193] "SVK" "SWE" "SWZ" "SYR" "TAN" "TCH" "TGA" "THA" "TJK" "TKM" "TLS" "TOG"
+[205] "TPE" "TTO" "TUN" "TUR" "TUV" "UAE" "UAR" "UGA" "UKR" "UNK" "URS" "URU"
+[217] "USA" "UZB" "VAN" "VEN" "VIE" "VIN" "VNM" "WIF" "YAR" "YEM" "YMD" "YUG"
+[229] "ZAM" "ZIM"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>season))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Summer" "Winter"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>city))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Albertville"            "Amsterdam"              "Antwerpen"             
+ [4] "Athina"                 "Atlanta"                "Barcelona"             
+ [7] "Beijing"                "Berlin"                 "Calgary"               
+[10] "Chamonix"               "Cortina d'Ampezzo"      "Garmisch-Partenkirchen"
+[13] "Grenoble"               "Helsinki"               "Innsbruck"             
+[16] "Lake Placid"            "Lillehammer"            "London"                
+[19] "Los Angeles"            "Melbourne"              "Mexico City"           
+[22] "Montreal"               "Moskva"                 "Munich"                
+[25] "Nagano"                 "Oslo"                   "Paris"                 
+[28] "Rio de Janeiro"         "Roma"                   "Salt Lake City"        
+[31] "Sankt Moritz"           "Sapporo"                "Sarajevo"              
+[34] "Seoul"                  "Sochi"                  "Squaw Valley"          
+[37] "St. Louis"              "Stockholm"              "Sydney"                
+[40] "Tokyo"                  "Torino"                 "Vancouver"             </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>sport))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Aeronautics"               "Alpine Skiing"            
+ [3] "Alpinism"                  "Archery"                  
+ [5] "Art Competitions"          "Athletics"                
+ [7] "Badminton"                 "Baseball"                 
+ [9] "Basketball"                "Basque Pelota"            
+[11] "Beach Volleyball"          "Biathlon"                 
+[13] "Bobsleigh"                 "Boxing"                   
+[15] "Canoeing"                  "Cricket"                  
+[17] "Croquet"                   "Cross Country Skiing"     
+[19] "Curling"                   "Cycling"                  
+[21] "Diving"                    "Equestrianism"            
+[23] "Fencing"                   "Figure Skating"           
+[25] "Football"                  "Freestyle Skiing"         
+[27] "Golf"                      "Gymnastics"               
+[29] "Handball"                  "Hockey"                   
+[31] "Ice Hockey"                "Jeu De Paume"             
+[33] "Judo"                      "Lacrosse"                 
+[35] "Luge"                      "Military Ski Patrol"      
+[37] "Modern Pentathlon"         "Motorboating"             
+[39] "Nordic Combined"           "Polo"                     
+[41] "Racquets"                  "Rhythmic Gymnastics"      
+[43] "Roque"                     "Rowing"                   
+[45] "Rugby"                     "Rugby Sevens"             
+[47] "Sailing"                   "Shooting"                 
+[49] "Short Track Speed Skating" "Skeleton"                 
+[51] "Ski Jumping"               "Snowboarding"             
+[53] "Softball"                  "Speed Skating"            
+[55] "Swimming"                  "Synchronized Swimming"    
+[57] "Table Tennis"              "Taekwondo"                
+[59] "Tennis"                    "Trampolining"             
+[61] "Triathlon"                 "Tug-Of-War"               
+[63] "Volleyball"                "Water Polo"               
+[65] "Weightlifting"             "Wrestling"                </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#sort(unique(olympics_data$event))</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(olympics_data<span class="sc">$</span>medal))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Bronze" "Gold"   "Silver"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(games) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 51 × 15
+# Groups:   games [51]
+      id name     sex     age height weight team  noc   games  year season city 
+   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;
+ 1  1724 "Aristi… M        NA     NA   NA   Gree… GRE   1896…  1896 Summer Athi…
+ 2     4 "Edgar … M        34     NA   NA   Denm… DEN   1900…  1900 Summer Paris
+ 3   404 "Louis … M        19     NA   NA   Vesp… USA   1904…  1904 Summer St. …
+ 4   139 "George… M        NA     NA   NA   Thes… GRE   1906…  1906 Summer Athi…
+ 5   635 "Alfred… M        27     NA   NA   Italy ITA   1908…  1908 Summer Lond…
+ 6    15 "Arvo O… M        22     NA   NA   Finl… FIN   1912…  1912 Summer Stoc…
+ 7     3 "Gunnar… M        24     NA   NA   Denm… DEN   1920…  1920 Summer Antw…
+ 8    15 "Arvo O… M        34     NA   NA   Finl… FIN   1924…  1924 Summer Paris
+ 9   391 "Claren… M        23    185  102   Unit… USA   1924…  1924 Winter Cham…
+10    47 "Erling… M        30    177   74   Norw… NOR   1928…  1928 Summer Amst…
+11   529 "Karl G… M        31     NA   NA   Swed… SWE   1928…  1928 Winter Sank…
+12     8 "Cornel… F        18    168   NA   Neth… NED   1932…  1932 Summer Los …
+13   746 "Goro A… M        19    156   56   Japan JPN   1932…  1932 Winter Lake…
+14    31 "Evald … M        24    174   70   Esto… EST   1936…  1936 Summer Berl…
+15   746 "Goro A… M        23    156   56   Japan JPN   1936…  1936 Winter Garm…
+16    17 "Paavo … M        28    175   64   Finl… FIN   1948…  1948 Summer Lond…
+17   665 "Gilber… M        29     NA   NA   Fran… FRA   1948…  1948 Winter Sank…
+18    10 "Einar … M        26     NA   NA   Finl… FIN   1952…  1952 Summer Hels…
+19    40 "Roald … M        23     NA   NA   Norw… NOR   1952…  1952 Winter Oslo 
+20    46 "Hans A… M        53    194   93   Norw… NOR   1956…  1956 Summer Melb…
+21    40 "Roald … M        27     NA   NA   Norw… NOR   1956…  1956 Winter Cort…
+22    46 "Hans A… M        57    194   93   Norw… NOR   1960…  1960 Summer Roma 
+23    24 "Nils E… M        24     NA   NA   Norw… NOR   1960…  1960 Winter Squa…
+24    87 "Rost'o… M        29    188   97   Sovi… URS   1964…  1964 Summer Tokyo
+25    24 "Nils E… M        27     NA   NA   Norw… NOR   1964…  1964 Winter Inns…
+26    28 "Jan-Er… M        43    170   77   Norw… NOR   1968…  1968 Summer Mexi…
+27   137 "Giorda… M        19    175   64   Italy ITA   1968…  1968 Winter Gren…
+28    28 "Jan-Er… M        47    170   77   Norw… NOR   1972…  1972 Summer Muni…
+29   363 "Kazumi… M        24    178   67   Japa… JPN   1972…  1972 Winter Sapp…
+30    52 "Patric… M        22    189   80   Fran… FRA   1976…  1976 Summer Mont…
+31   363 "Kazumi… M        28    178   67   Japa… JPN   1976…  1976 Winter Inns…
+32    85 "Alejan… M        28    181   82   Spain ESP   1980…  1980 Summer Mosk…
+33    11 "Jorma … M        22    182   76.5 Finl… FIN   1980…  1980 Winter Lake…
+34    27 "Johan … M        26     NA   NA   Neth… NED   1984…  1984 Summer Los …
+35    26 "Agnes … F        17    169   65   Norw… NOR   1984…  1984 Winter Sara…
+36    29 "Willem… F        22     NA   NA   Neth… NED   1988…  1988 Summer Seoul
+37     5 "Christ… F        21    185   82   Neth… NED   1988…  1988 Winter Calg…
+38     1 "A Diji… M        24    180   80   China CHN   1992…  1992 Summer Barc…
+39     5 "Christ… F        25    185   82   Neth… NED   1992…  1992 Winter Albe…
+40     5 "Christ… F        27    185   82   Neth… NED   1994…  1994 Winter Lill…
+41    13 "Minna … F        30    159   55.5 Finl… FIN   1996…  1996 Summer Atla…
+42    20 "Kjetil… M        26    176   85   Norw… NOR   1998…  1998 Winter Naga…
+43    12 "Jyri T… M        31    172   70   Finl… FIN   2000…  2000 Summer Sydn…
+44     9 "Antti … M        26    186   96   Finl… FIN   2002…  2002 Winter Salt…
+45    23 "Fritz … M        26    187   89   Norw… NOR   2004…  2004 Summer Athi…
+46    20 "Kjetil… M        34    176   85   Norw… NOR   2006…  2006 Winter Tori…
+47    21 "Ragnhi… F        27    163   NA   Norw… NOR   2008…  2008 Summer Beij…
+48   121 "Muhamm… M        23    168   55   Paki… PAK   2010…  2010 Winter Vanc…
+49     2 "A Lamu… M        23    170   60   China CHN   2012…  2012 Summer Lond…
+50    16 "Juhama… M        28    184   85   Finl… FIN   2014…  2014 Winter Sochi
+51    22 "Andree… F        22    170  125   Roma… ROU   2016…  2016 Summer Rio …
+# ℹ 3 more variables: sport &lt;chr&gt;, event &lt;chr&gt;, medal &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year, age, weight) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">skim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">select(olympics_data, yea…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">271116</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1978.38</td>
+<td style="text-align: right;">29.88</td>
+<td style="text-align: right;">1896</td>
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">2002</td>
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">▁▂▃▆▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">9474</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">25.56</td>
+<td style="text-align: right;">6.39</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: left;">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">weight</td>
+<td style="text-align: right;">62875</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">70.70</td>
+<td style="text-align: right;">14.35</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: left;">▃▇▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="number-of-event-types-of-games-by-season" class="level1">
+<h1>Number of event types of games by season</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="st">"Summer"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sport) <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_event_count =</span> <span class="fu">n_distinct</span>(event)) <span class="sc">|&gt;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_event_count <span class="sc">&gt;=</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(unique_event_count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 27 × 2
+   sport                 unique_event_count
+   &lt;chr&gt;                              &lt;int&gt;
+ 1 Athletics                             83
+ 2 Shooting                              83
+ 3 Swimming                              55
+ 4 Cycling                               44
+ 5 Sailing                               38
+ 6 Wrestling                             30
+ 7 Archery                               29
+ 8 Art Competitions                      29
+ 9 Canoeing                              27
+10 Gymnastics                            27
+11 Rowing                                25
+12 Weightlifting                         21
+13 Equestrianism                         18
+14 Fencing                               18
+15 Boxing                                15
+16 Judo                                  15
+17 Diving                                10
+18 Tennis                                 9
+19 Taekwondo                              8
+20 Table Tennis                           6
+21 Badminton                              5
+22 Figure Skating                         4
+23 Croquet                                3
+24 Golf                                   3
+25 Modern Pentathlon                      3
+26 Motorboating                           3
+27 Synchronized Swimming                  3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="st">"Winter"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sport) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_event_count =</span> <span class="fu">n_distinct</span>(event)) <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_event_count <span class="sc">&gt;=</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(unique_event_count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 2
+   sport                     unique_event_count
+   &lt;chr&gt;                                  &lt;int&gt;
+ 1 Cross Country Skiing                      23
+ 2 Biathlon                                  13
+ 3 Speed Skating                             13
+ 4 Snowboarding                              12
+ 5 Alpine Skiing                             10
+ 6 Freestyle Skiing                          10
+ 7 Short Track Speed Skating                  8
+ 8 Figure Skating                             5
+ 9 Nordic Combined                            5
+10 Bobsleigh                                  4
+11 Luge                                       4
+12 Ski Jumping                                4</code></pre>
+</div>
+</div>
+</section>
+<section id="sports-that-were-only-for-one-year" class="level1">
+<h1>Sports that were only for one year</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sport) <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">year_count =</span> <span class="fu">n_distinct</span>(year)) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year_count <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   sport               year_count
+   &lt;chr&gt;                    &lt;int&gt;
+ 1 Aeronautics                  1
+ 2 Basque Pelota                1
+ 3 Cricket                      1
+ 4 Croquet                      1
+ 5 Jeu De Paume                 1
+ 6 Military Ski Patrol          1
+ 7 Motorboating                 1
+ 8 Racquets                     1
+ 9 Roque                        1
+10 Rugby Sevens                 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#olympics_data |&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  group_by(event) |&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  summarise(year_count = n_distinct(year)) |&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(year_count == 1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sports-and-events-having-great-history" class="level1">
+<h1>Sports and events having great history</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>sport_games_count <span class="ot">&lt;-</span> olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sport) <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">games_count =</span> <span class="fu">n_distinct</span>(games)) <span class="sc">|&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(games_count)) <span class="sc">|&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(games_count <span class="sc">&gt;=</span> <span class="dv">20</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>sport_games_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 24 × 2
+   sport                games_count
+   &lt;chr&gt;                      &lt;int&gt;
+ 1 Athletics                     29
+ 2 Cycling                       29
+ 3 Fencing                       29
+ 4 Gymnastics                    29
+ 5 Swimming                      29
+ 6 Rowing                        28
+ 7 Wrestling                     28
+ 8 Diving                        27
+ 9 Football                      27
+10 Shooting                      27
+11 Water Polo                    27
+12 Sailing                       26
+13 Weightlifting                 26
+14 Boxing                        25
+15 Equestrianism                 25
+16 Figure Skating                24
+17 Modern Pentathlon             24
+18 Hockey                        23
+19 Ice Hockey                    23
+20 Cross Country Skiing          22
+21 Nordic Combined               22
+22 Ski Jumping                   22
+23 Speed Skating                 22
+24 Bobsleigh                     21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># keep events that were present in at least 20 games</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>event_games_count <span class="ot">&lt;-</span> olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event) <span class="sc">|&gt;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">games_count =</span> <span class="fu">n_distinct</span>(games)) <span class="sc">|&gt;</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(games_count)) <span class="sc">|&gt;</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(games_count <span class="sc">&gt;=</span> <span class="dv">20</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> olympics_data <span class="sc">|&gt;</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sport <span class="sc">%in%</span> sport_games_count<span class="sc">$</span>sport)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="bar-chart-of-number-of-medals-per-year" class="level1">
+<h1>Bar chart of number of medals per year</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (season_value <span class="cf">in</span> <span class="fu">unique</span>(data<span class="sc">$</span>season)) {</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(season <span class="sc">==</span> season_value <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(medal)) <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(year), <span class="at">fill =</span> <span class="fu">factor</span>(medal, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Gold"</span>, <span class="st">"Silver"</span>, <span class="st">"Bronze"</span>))) <span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Bronze"</span> <span class="ot">=</span> <span class="st">"#cd7f32"</span>, <span class="st">"Silver"</span> <span class="ot">=</span> <span class="st">"#c0c0c0"</span>, <span class="st">"Gold"</span> <span class="ot">=</span> <span class="st">"#ffd700"</span>)) <span class="sc">+</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Number of Medals Earned by Year ("</span>, season_value, <span class="st">" Season)"</span>, <span class="at">sep =</span> <span class="st">""</span>),</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> <span class="st">"Number of Medals"</span>,</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="st">"Medal Type"</span>) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_text</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="fu">aes</span>(<span class="at">label =</span> ..count..), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>), <span class="at">size =</span> <span class="dv">2</span>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p)</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
+ℹ Please use `after_stat(count)` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="average-age-height-and-weight-of-top-3-and-others-by-sports" class="level1">
+<h1>Average age, height and weight of top 3 and others by sports</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, sport) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_age_top3 =</span> <span class="fu">mean</span>(age[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_age_others =</span> <span class="fu">mean</span>(age[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_age_top3 <span class="sc">-</span> average_age_others),</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 5
+   sex   sport                average_age_top3 average_age_others  diff
+   &lt;chr&gt; &lt;chr&gt;                           &lt;dbl&gt;              &lt;dbl&gt; &lt;dbl&gt;
+ 1 F     Ski Jumping                      23.3               21.0  2.30
+ 2 M     Figure Skating                   25.5               23.3  2.18
+ 3 F     Figure Skating                   22.5               20.5  2.02
+ 4 F     Cross Country Skiing             27.4               25.5  1.96
+ 5 F     Speed Skating                    25.5               23.5  1.94
+ 6 M     Sailing                          32.4               30.6  1.83
+ 7 M     Cross Country Skiing             27.8               26.1  1.69
+ 8 M     Equestrianism                    35.8               34.2  1.60
+ 9 F     Bobsleigh                        29.1               27.6  1.50
+10 F     Football                         25.8               24.5  1.23
+11 F     Shooting                         28.0               29.2  1.18
+12 F     Gymnastics                       20.2               19.2  1.05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, sport) <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_weight_top3 =</span> <span class="fu">mean</span>(weight[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_weight_others =</span> <span class="fu">mean</span>(weight[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_weight_top3 <span class="sc">-</span> average_weight_others),</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 17 × 5
+   sex   sport             average_weight_top3 average_weight_others  diff
+   &lt;chr&gt; &lt;chr&gt;                           &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
+ 1 F     Ski Jumping                      57                    52.0  4.96
+ 2 M     Cycling                          75.9                  71.8  4.16
+ 3 F     Ice Hockey                       68.2                  64.1  4.11
+ 4 M     Swimming                         81.4                  77.6  3.81
+ 5 F     Cycling                          62.7                  59.3  3.40
+ 6 M     Water Polo                       90.2                  86.8  3.39
+ 7 M     Weightlifting                    82.9                  79.8  3.15
+ 8 F     Swimming                         64.1                  61.1  3.01
+ 9 M     Speed Skating                    78.8                  76.0  2.82
+10 M     Athletics                        76.2                  73.5  2.71
+11 M     Boxing                           67.4                  64.9  2.54
+12 F     Rowing                           71.8                  69.3  2.52
+13 M     Ski Jumping                      63.0                  65.5  2.44
+14 F     Athletics                        62.3                  60.0  2.30
+15 M     Sailing                          80.8                  78.5  2.29
+16 F     Water Polo                       71.5                  69.3  2.24
+17 F     Modern Pentathlon                60.3                  58.1  2.15</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, sport) <span class="sc">|&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_height_top3 =</span> <span class="fu">mean</span>(height[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_height_others =</span> <span class="fu">mean</span>(height[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_height_top3 <span class="sc">-</span> average_height_others),</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 5
+  sex   sport             average_height_top3 average_height_others  diff
+  &lt;chr&gt; &lt;chr&gt;                           &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
+1 F     Modern Pentathlon                173.                  170.  3.74
+2 M     Swimming                         187.                  184.  3.08
+3 F     Swimming                         174.                  171.  2.98
+4 F     Ice Hockey                       170.                  167.  2.33
+5 M     Cycling                          180.                  178.  2.33
+6 F     Ski Jumping                      167.                  164.  2.30
+7 M     Nordic Combined                  178.                  176.  2.23
+8 M     Speed Skating                    181.                  179.  2.12
+9 M     Boxing                           175.                  173.  2.04</code></pre>
+</div>
+</div>
+</section>
+<section id="average-age-height-and-weight-of-top-3-and-others-by-events" class="level1">
+<h1>Average age, height and weight of top 3 and others by events</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, event) <span class="sc">|&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_age_top3 =</span> <span class="fu">mean</span>(age[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_age_others =</span> <span class="fu">mean</span>(age[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_age_top3 <span class="sc">-</span> average_age_others),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">8</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 5
+   sex   event                         average_age_top3 average_age_others  diff
+   &lt;chr&gt; &lt;chr&gt;                                    &lt;dbl&gt;              &lt;dbl&gt; &lt;dbl&gt;
+ 1 M     Shooting Men's Free Pistol, …             53                 33.6 19.4 
+ 2 M     Shooting Men's Dueling Pisto…             53                 33.6 19.4 
+ 3 M     Swimming Men's 220 yard Free…             20.7               36   15.3 
+ 4 M     Equestrianism Mixed Long Jump             26                 38.5 12.5 
+ 5 F     Shooting Mixed Small-Bore Ri…             33                 21   12   
+ 6 M     Shooting Men's Dueling Pisto…             26.3               38.3 12.0 
+ 7 M     Equestrianism Mixed Four-In-…             51.5               39.7 11.8 
+ 8 F     Sailing Mixed 8 metres                    37                 26.3 10.7 
+ 9 M     Shooting Men's Dueling Pisto…             27                 37.1 10.1 
+10 M     Shooting Men's Muzzle-Loadin…             29                 39   10   
+11 M     Sailing Mixed 3-10 Ton                    32.2               42.1  9.92
+12 M     Shooting Men's Military Rifl…             25.3               34.9  9.57
+13 M     Shooting Men's Dueling Pisto…             32.4               41.9  9.52
+14 M     Sailing Mixed 0-0.5 Ton                   25.5               34    8.5 
+15 M     Shooting Men's Small-Bore Ri…             26.5               35    8.5 
+16 M     Swimming Men's 4 x 50 Yard F…             21.8               30    8.25
+17 M     Sailing Mixed 1-2 Ton                     42.2               34    8.22
+18 M     Fencing Men's Foil, Masters,…             24.8               32.9  8.17</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, event) <span class="sc">|&gt;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_weight_top3 =</span> <span class="fu">mean</span>(weight[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_weight_others =</span> <span class="fu">mean</span>(weight[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_weight_top3 <span class="sc">-</span> average_weight_others),</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 5
+   sex   event                   average_weight_top3 average_weight_others  diff
+   &lt;chr&gt; &lt;chr&gt;                                 &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
+ 1 M     Gymnastics Men's Rope …                57.5                 102    44.5
+ 2 M     Wrestling Men's Unlimi…                70                   102    32  
+ 3 M     Athletics Men's Shot P…               105.                   80.3  24.3
+ 4 M     Athletics Men's Standi…                79.7                  58    21.7
+ 5 M     Weightlifting Men's Un…                99                    81    18  
+ 6 M     Cycling Men's 5,000 me…                83                    66.5  16.5
+ 7 M     Rowing Men's Coxed Fou…                55                    69.2  14.2
+ 8 F     Weightlifting Women's …               118.                  106.   12.1
+ 9 M     Athletics Men's All-Ar…                90                    78    12  
+10 M     Swimming Men's 1,000 m…                83                    95    12  
+11 M     Swimming Men's 4,000 m…                83                    95    12  
+12 M     Swimming Men's One Mil…                66                    78    12  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, event) <span class="sc">|&gt;</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_height_top3 =</span> <span class="fu">mean</span>(height[<span class="sc">!</span><span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_height_others =</span> <span class="fu">mean</span>(height[<span class="fu">is.na</span>(medal)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diff =</span> <span class="fu">abs</span>(average_height_top3 <span class="sc">-</span> average_height_others),</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 5
+   sex   event                   average_height_top3 average_height_others  diff
+   &lt;chr&gt; &lt;chr&gt;                                 &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
+ 1 M     Wrestling Men's Unlimi…                159                   188   29  
+ 2 M     Athletics Men's Standi…                186                   167   19  
+ 3 M     Cycling Men's 1 mile                   181                   163   18  
+ 4 M     Cycling Men's 25 mile                  163                   181   18  
+ 5 M     Cycling Men's 5 mile                   163                   181   18  
+ 6 M     Gymnastics Men's Indiv…                167                   185   18  
+ 7 M     Wrestling Men's Middle…                174                   161   13  
+ 8 M     Athletics Men's 200 me…                182                   170.  11.5
+ 9 M     Cycling Men's 5,000 me…                188                   176.  11.5
+10 M     Shooting Men's Small-B…                185                   174.  11.4
+11 M     Swimming Men's 200 met…                171                   182   11  
+12 M     Shooting Men's Militar…                181.                  170.  10.3</code></pre>
+</div>
+</div>
+</section>
+<section id="athletes-winning-medal-in-most-different-sports" class="level1">
+<h1>Athletes winning medal in most different sports</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(medal)) <span class="sc">|&gt;</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_event_count =</span> <span class="fu">n_distinct</span>(event),</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">unique_sports_list =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(sport)), <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_event_count <span class="sc">&gt;=</span> <span class="dv">7</span>) <span class="sc">|&gt;</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(unique_event_count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 21 × 3
+   name                                  unique_event_count unique_sports_list
+   &lt;chr&gt;                                              &lt;int&gt; &lt;chr&gt;             
+ 1 "Carl Townsend Osburn"                                11 Shooting          
+ 2 "Aleksandr Nikolayevich Dityatin"                      8 Gymnastics        
+ 3 "Gustaf Vilhelm Carlberg"                              8 Shooting          
+ 4 "Michael Fred Phelps, II"                              8 Swimming          
+ 5 "Nikolay Yefimovich Andrianov"                         8 Gymnastics        
+ 6 "Zoltn Imre dn von Halmay"                             8 Swimming          
+ 7 "Aleksey Yuryevich Nemov"                              7 Gymnastics        
+ 8 "Borys Anfiyanovych Shakhlin"                          7 Gymnastics        
+ 9 "Charles Meldrum \"Charlie\" Daniels"                  7 Swimming          
+10 "Larysa Semenivna Latynina (Diriy-)"                   7 Gymnastics        
+11 "Lloyd Spencer Spooner"                                7 Shooting          
+12 "Mariya Kindrativna Horokhovska"                       7 Gymnastics        
+13 "Mark Andrew Spitz"                                    7 Swimming          
+14 "Matthew Nicholas \"Matt\" Biondi"                     7 Swimming          
+15 "Mikhail Yakovlevich Voronin"                          7 Gymnastics        
+16 "Paavo Johannes Nurmi"                                 7 Athletics         
+17 "Sawao Kato"                                           7 Gymnastics        
+18 "Takashi Ono"                                          7 Gymnastics        
+19 "Viktor Ivanovych Chukarin"                            7 Gymnastics        
+20 "Vitaly Venediktovich Shcherbo"                        7 Gymnastics        
+21 "Willis Augustus Lee, Jr."                             7 Shooting          </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name <span class="sc">==</span> <span class="st">"Carl Townsend Osburn"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(age, medal, noc, year, sport, event)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 6
+     age medal  noc    year sport    event                                      
+   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                                      
+ 1    28 &lt;NA&gt;   USA    1912 Shooting Shooting Men's Free Rifle, Three Positions…
+ 2    28 Silver USA    1912 Shooting Shooting Men's Military Rifle, Three Posit…
+ 3    28 Silver USA    1912 Shooting Shooting Men's Military Rifle, Any Positio…
+ 4    28 Gold   USA    1912 Shooting Shooting Men's Military Rifle, 200, 400, 5…
+ 5    28 &lt;NA&gt;   USA    1912 Shooting Shooting Men's Small-Bore Rifle, Any Posit…
+ 6    28 Bronze USA    1912 Shooting Shooting Men's Small-Bore Rifle, Prone, 50…
+ 7    28 &lt;NA&gt;   USA    1912 Shooting Shooting Men's Small-Bore Rifle, Disappear…
+ 8    35 &lt;NA&gt;   USA    1920 Shooting Shooting Men's Free Rifle, Three Positions…
+ 9    35 Gold   USA    1920 Shooting Shooting Men's Free Rifle, Three Positions…
+10    35 Gold   USA    1920 Shooting Shooting Men's Military Rifle, Prone, 300 …
+11    35 Gold   USA    1920 Shooting Shooting Men's Military Rifle, Standing, 3…
+12    35 Silver USA    1920 Shooting Shooting Men's Military Rifle, Standing, 3…
+13    35 Gold   USA    1920 Shooting Shooting Men's Military Rifle, 300 metres …
+14    35 Bronze USA    1920 Shooting Shooting Men's Running Target, Single Shot…
+15    35 &lt;NA&gt;   USA    1920 Shooting Shooting Men's Running Target, Double Shot…
+16    39 Silver USA    1924 Shooting Shooting Men's Free Rifle, Prone, 600 metr…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(medal <span class="sc">==</span> <span class="st">"Gold"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_sport_count =</span> <span class="fu">n_distinct</span>(sport),</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">unique_sport_list =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(sport)), <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_sport_count <span class="sc">&gt;=</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(unique_sport_count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 3
+   name                                     unique_sport_count unique_sport_list
+   &lt;chr&gt;                                                 &lt;int&gt; &lt;chr&gt;            
+ 1 "Carl Frederik Pedersen"                                  2 Football, Rowing 
+ 2 "Carl Schuhmann"                                          2 Gymnastics, Wres…
+ 3 "Edward Patrick Francis \"Eddie\" Eagan"                  2 Bobsleigh, Boxing
+ 4 "Heikki Vihtori Hasu"                                     2 Cross Country Sk…
+ 5 "Johan Hagbart Pedersen Grttumsbraaten"                   2 Cross Country Sk…
+ 6 "John Arthur Jarvis"                                      2 Swimming, Water …
+ 7 "Joseph Aloysius \"Joe\" Ruddy, Sr."                      2 Swimming, Water …
+ 8 "Lars Daniel Norling"                                     2 Equestrianism, G…
+ 9 "Leo Joseph \"Budd\" Goodwin"                             2 Swimming, Water …
+10 "Li Na"                                                   2 Diving, Fencing  
+11 "Louis de Breda \"Lou\" Handley"                          2 Swimming, Water …
+12 "Paolo Francesco \"Paul\"  Radmilovic"                    2 Swimming, Water …
+13 "Thorleif Haug (Johnsen-)"                                2 Cross Country Sk…</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

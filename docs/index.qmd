@@ -1,0 +1,217 @@
+---
+title: "Olympics Athletes and Medals"
+author: "David Kelemen"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setup the project
+```{r setup}
+library(skimr)
+library(tidyverse)
+
+theme_set(theme_light())
+
+options(dplyr.print_max = Inf)
+```
+
+# Read the data
+```{r}
+olympics_data <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-08-06/olympics.csv')
+```
+
+# Explore the dataset
+```{r}
+olympics_data |>
+  glimpse()
+
+summary(olympics_data)
+
+sort(unique(olympics_data$sex))
+sort(unique(olympics_data$noc))
+sort(unique(olympics_data$season))
+sort(unique(olympics_data$city))
+sort(unique(olympics_data$sport))
+#sort(unique(olympics_data$event))
+sort(unique(olympics_data$medal))
+
+
+olympics_data |>
+  group_by(games) |>
+  slice(1)
+
+olympics_data |>
+  select(year, age, weight) |>
+  skim()
+```
+
+# Number of event types of games by season
+```{r}
+olympics_data |>
+  filter(season == "Summer") |>
+  group_by(sport) |>
+  summarise(unique_event_count = n_distinct(event)) |>
+  filter(unique_event_count >= 3) |>
+  arrange(desc(unique_event_count))
+
+olympics_data |>
+  filter(season == "Winter") |>
+  group_by(sport) |>
+  summarise(unique_event_count = n_distinct(event)) |>
+  filter(unique_event_count >= 3) |>
+  arrange(desc(unique_event_count))
+```
+
+# Sports that were only for one year
+```{r}
+olympics_data |>
+  group_by(sport) |>
+  summarise(year_count = n_distinct(year)) |>
+  filter(year_count == 1)
+
+#olympics_data |>
+#  group_by(event) |>
+#  summarise(year_count = n_distinct(year)) |>
+#  filter(year_count == 1)
+```
+
+# Sports and events having great history
+```{r}
+sport_games_count <- olympics_data |>
+  group_by(sport) |>
+  summarise(games_count = n_distinct(games)) |>
+  arrange(desc(games_count)) |>
+  filter(games_count >= 20)
+
+sport_games_count
+
+# keep events that were present in at least 20 games
+event_games_count <- olympics_data |>
+  group_by(event) |>
+  summarise(games_count = n_distinct(games)) |>
+  arrange(desc(games_count)) |>
+  filter(games_count >= 20)
+data <- olympics_data |>
+  filter(sport %in% sport_games_count$sport)
+```
+
+# Bar chart of number of medals per year
+```{r}
+for (season_value in unique(data$season)) {
+  p <- data |>
+    filter(season == season_value & !is.na(medal)) |>
+    ggplot() +
+      aes(x = factor(year), fill = factor(medal, levels = c("Gold", "Silver", "Bronze"))) +
+      geom_bar(position = "stack") +
+      scale_fill_manual(values = c("Bronze" = "#cd7f32", "Silver" = "#c0c0c0", "Gold" = "#ffd700")) +
+      labs(title = paste("Number of Medals Earned by Year (", season_value, " Season)", sep = ""),
+           x = "Year",
+           y = "Number of Medals",
+           fill = "Medal Type") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      geom_text(stat = 'count', aes(label = ..count..), position = position_stack(vjust = 0.5), size = 2)
+  print(p)
+}
+```
+
+# Average age, height and weight of top 3 and others by sports
+```{r}
+data |>
+  group_by(sex, sport) |>
+  summarise(
+    average_age_top3 = mean(age[!is.na(medal)], na.rm = TRUE),
+    average_age_others = mean(age[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_age_top3 - average_age_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 1) |>
+  arrange(desc(diff))
+
+data |>
+  group_by(sex, sport) |>
+  summarise(
+    average_weight_top3 = mean(weight[!is.na(medal)], na.rm = TRUE),
+    average_weight_others = mean(weight[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_weight_top3 - average_weight_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 2) |>
+  arrange(desc(diff))
+
+data |>
+  group_by(sex, sport) |>
+  summarise(
+    average_height_top3 = mean(height[!is.na(medal)], na.rm = TRUE),
+    average_height_others = mean(height[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_height_top3 - average_height_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 2) |>
+  arrange(desc(diff))
+```
+
+# Average age, height and weight of top 3 and others by events
+```{r}
+data |>
+  group_by(sex, event) |>
+  summarise(
+    average_age_top3 = mean(age[!is.na(medal)], na.rm = TRUE),
+    average_age_others = mean(age[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_age_top3 - average_age_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 8) |>
+  arrange(desc(diff))
+
+data |>
+  group_by(sex, event) |>
+  summarise(
+    average_weight_top3 = mean(weight[!is.na(medal)], na.rm = TRUE),
+    average_weight_others = mean(weight[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_weight_top3 - average_weight_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 10) |>
+  arrange(desc(diff))
+
+data |>
+  group_by(sex, event) |>
+  summarise(
+    average_height_top3 = mean(height[!is.na(medal)], na.rm = TRUE),
+    average_height_others = mean(height[is.na(medal)], na.rm = TRUE),
+    diff = abs(average_height_top3 - average_height_others),
+    .groups = 'drop'
+  ) |>
+  filter(diff > 10) |>
+  arrange(desc(diff))
+```
+
+
+# Athletes winning medal in most different sports
+```{r}
+data |>
+  filter(!is.na(medal)) |>
+  group_by(name) |>
+  summarise(unique_event_count = n_distinct(event),
+            unique_sports_list = paste(sort(unique(sport)), collapse = ", ")) |>
+  filter(unique_event_count >= 7) |>
+  arrange(desc(unique_event_count))
+
+data |>
+  filter(name == "Carl Townsend Osburn") |>
+  select(age, medal, noc, year, sport, event)
+
+
+data |>
+  filter(medal == "Gold") |>
+  group_by(name) |>
+  summarise(unique_sport_count = n_distinct(sport),
+            unique_sport_list = paste(sort(unique(sport)), collapse = ", ")) |>
+  filter(unique_sport_count >= 2) |>
+  arrange(desc(unique_sport_count))
+
+```
+

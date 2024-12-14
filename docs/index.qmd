@@ -42,9 +42,7 @@ olympics_data |>
   group_by(games) |>
   slice(1)
 
-olympics_data |>
-  select(year, age, weight) |>
-  skim()
+skim(olympics_data)
 ```
 
 # Number of event types of games by season
@@ -258,3 +256,6 @@ filtered_data |>
   theme_minimal()
 ```
 
+
+# TODO Top 10 countries number of medals (gold, silver, bronze)
+# TODO Prediciton model

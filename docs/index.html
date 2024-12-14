@@ -353,16 +353,14 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 51    22 "Andree… F        22    170  125   Roma… ROU   2016…  2016 Summer Rio …
 # ℹ 3 more variables: sport &lt;chr&gt;, event &lt;chr&gt;, medal &lt;chr&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>olympics_data <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year, age, weight) <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">skim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(olympics_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Data summary</caption>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Name</td>
-<td style="text-align: left;">select(olympics_data, yea…</td>
+<td style="text-align: left;">olympics_data</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Number of rows</td>
@@ -370,7 +368,7 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Number of columns</td>
-<td style="text-align: left;">3</td>
+<td style="text-align: left;">15</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">_______________________</td>
@@ -381,33 +379,164 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 <td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">numeric</td>
-<td style="text-align: left;">3</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">10</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">________________________</td>
 <td style="text-align: left;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Group variables</td>
 <td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">name</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">134731</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sex</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">team</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1184</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">noc</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">games</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">season</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">city</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sport</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">event</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">765</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">medal</td>
+<td style="text-align: right;">231333</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 16%">
-<col style="width: 12%">
-<col style="width: 16%">
+<col style="width: 14%">
+<col style="width: 10%">
+<col style="width: 14%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
 <col style="width: 9%">
 <col style="width: 7%">
 <col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 6%">
-<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -426,17 +555,17 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">year</td>
+<td style="text-align: left;">id</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">1978.38</td>
-<td style="text-align: right;">29.88</td>
-<td style="text-align: right;">1896</td>
-<td style="text-align: right;">1960</td>
-<td style="text-align: right;">1988</td>
-<td style="text-align: right;">2002</td>
-<td style="text-align: right;">2016</td>
-<td style="text-align: left;">▁▂▃▆▇</td>
+<td style="text-align: right;">68248.95</td>
+<td style="text-align: right;">39022.29</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">34643</td>
+<td style="text-align: right;">68205</td>
+<td style="text-align: right;">102097.2</td>
+<td style="text-align: right;">135571</td>
+<td style="text-align: left;">▇▇▇▇▇</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">age</td>
@@ -447,11 +576,24 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">24</td>
-<td style="text-align: right;">28</td>
+<td style="text-align: right;">28.0</td>
 <td style="text-align: right;">97</td>
 <td style="text-align: left;">▇▃▁▁▁</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">height</td>
+<td style="text-align: right;">60171</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">175.34</td>
+<td style="text-align: right;">10.52</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">183.0</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: left;">▁▂▇▂▁</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">weight</td>
 <td style="text-align: right;">62875</td>
 <td style="text-align: right;">0.77</td>
@@ -460,9 +602,22 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 <td style="text-align: right;">25</td>
 <td style="text-align: right;">60</td>
 <td style="text-align: right;">70</td>
-<td style="text-align: right;">79</td>
+<td style="text-align: right;">79.0</td>
 <td style="text-align: right;">214</td>
 <td style="text-align: left;">▃▇▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1978.38</td>
+<td style="text-align: right;">29.88</td>
+<td style="text-align: right;">1896</td>
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">2002.0</td>
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">▁▂▃▆▇</td>
 </tr>
 </tbody>
 </table>
@@ -1087,6 +1242,12 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 </div>
 </div>
 </div>
+</section>
+<section id="todo-top-10-countries-number-of-medals-gold-silver-bronze" class="level1">
+<h1>TODO Top 10 countries number of medals (gold, silver, bronze)</h1>
+</section>
+<section id="todo-prediciton-model" class="level1">
+<h1>TODO Prediciton model</h1>
 </section>
 
 </main>

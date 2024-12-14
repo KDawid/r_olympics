@@ -215,3 +215,46 @@ data |>
 
 ```
 
+# Number of athletes by event and year of summer games
+```{r}
+summer_data <- data |>
+  filter(season == "Summer" & year > 1950)
+
+pivot_table <- summer_data |>
+  group_by(event, year) |>
+  summarise(athletes = n(), .groups = 'drop') |>
+  spread(year, athletes)
+
+pivot_table <- pivot_table |>
+  mutate(total_athletes = rowSums(select(pivot_table, -event), na.rm = TRUE),
+         total_years = rowSums(!is.na(select(pivot_table, -event))),
+         average_athletes = rowMeans(select(pivot_table, -event), na.rm = TRUE)
+         )
+
+# Keep events where at least 250 athletes competed over 15+ years, average 20+ athletes per year
+popular_games_pivot <- pivot_table |>
+  filter(total_athletes >= 250 & total_years >= 15 & average_athletes >= 15)
+
+print(popular_games_pivot |>
+        select(event, total_athletes, total_years, average_athletes))
+
+filtered_data <- summer_data |>
+  semi_join(popular_games_pivot, by = "event")
+
+```
+
+
+# Check average age of winners
+```{r}
+filtered_data |>
+  filter(medal == "Gold") |>
+  group_by(year) |>
+  summarise(avg_age = mean(age, na.rm = TRUE)) |>
+  ungroup() |>
+  ggplot() +
+  aes(x = year, y = avg_age) +
+  geom_point() +
+  labs(title = 'Average Age of Winners by Year', x = 'Year', y = 'Average Age') +
+  theme_minimal()
+```
+

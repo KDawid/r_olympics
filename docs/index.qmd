@@ -9,8 +9,10 @@ editor_options:
 
 # Setup the project
 ```{r setup}
+library(correlation)
 library(skimr)
 library(tidyverse)
+library(performance)
 
 theme_set(theme_light())
 
@@ -97,13 +99,15 @@ data <- olympics_data |>
 
 # Bar chart of number of medals per year
 ```{r}
+medal_colors <- c("Gold" = "#ffd700", "Silver" = "#c0c0c0", "Bronze" = "#cd7f32")
+
 for (season_value in unique(data$season)) {
   p <- data |>
     filter(season == season_value & !is.na(medal)) |>
     ggplot() +
       aes(x = factor(year), fill = factor(medal, levels = c("Gold", "Silver", "Bronze"))) +
       geom_bar(position = "stack") +
-      scale_fill_manual(values = c("Bronze" = "#cd7f32", "Silver" = "#c0c0c0", "Gold" = "#ffd700")) +
+      scale_fill_manual(values = medal_colors) +
       labs(title = paste("Number of Medals Earned by Year (", season_value, " Season)", sep = ""),
            x = "Year",
            y = "Number of Medals",
@@ -113,6 +117,51 @@ for (season_value in unique(data$season)) {
       geom_text(stat = 'count', aes(label = ..count..), position = position_stack(vjust = 0.5), size = 2)
   print(p)
 }
+```
+
+# Top 10 countries number of medals (gold, silver, bronze)
+```{r}
+data |>
+  filter(!is.na(medal)) |>
+  group_by(noc) |>
+  summarise(Gold = sum(medal == "Gold"),
+            Silver = sum(medal == "Silver"),
+            Bronze = sum(medal == "Bronze"),
+            total_medals = n()) |>
+  arrange(desc(total_medals)) |>
+  slice(1:15) |>
+  select(noc, Gold, Silver, Bronze) |>
+  gather(key = "medal", value = "count", -noc) |>
+  ggplot() +
+  aes(x = count, y = reorder(noc, count), fill = factor(medal, levels = c("Bronze", "Silver", "Gold"))) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = count), position = position_stack(vjust = 0.5), size = 2) +
+  scale_fill_manual(values = medal_colors) +
+  labs(title = "Number of Medals by Country (Top 10)",
+       x = "Number of Medals",
+       y = NULL,
+       fill = "Medal Type") +
+  theme_minimal()
+```
+
+# Number of Hungarian medals per year in summer season
+```{r}
+data |>
+  filter(noc == "HUN" & season == "Summer") |>
+  group_by(year, medal) |>
+  summarise(count = n()) |>
+  spread(medal, count, fill = 0) |>
+  ggplot() +
+  aes(x = year) +
+  geom_line(aes(y = Gold, color = "Gold"), size = 1) +
+  geom_line(aes(y = Silver, color = "Silver"), size = 1) +
+  geom_line(aes(y = Bronze, color = "Bronze"), size = 1) +
+  scale_color_manual(values = medal_colors) +
+  labs(title = "Number of Medals by Year for Hungary (summer)",
+       x = "Year",
+       y = "Number of Medals",
+       color = "Medal Type") +
+  theme_minimal()
 ```
 
 # Average age, height and weight of top 3 and others by sports
@@ -187,7 +236,6 @@ data |>
   arrange(desc(diff))
 ```
 
-
 # Athletes winning medal in most different sports
 ```{r}
 data |>
@@ -241,8 +289,7 @@ filtered_data <- summer_data |>
 
 ```
 
-
-# Check average age of winners
+# Check average age of winners per year
 ```{r}
 filtered_data |>
   filter(medal == "Gold") |>
@@ -252,10 +299,106 @@ filtered_data |>
   ggplot() +
   aes(x = year, y = avg_age) +
   geom_point() +
-  labs(title = 'Average Age of Winners by Year', x = 'Year', y = 'Average Age') +
+  labs(title = 'Average Age of Winners per Year', x = NULL, y = 'Average Age') +
   theme_minimal()
 ```
 
+# Check correlation of athlete data
+```{r}
+data |> 
+    select(age, weight, height) |> 
+    correlation() |> 
+    summary()
+```
 
-# TODO Top 10 countries number of medals (gold, silver, bronze)
-# TODO Prediciton model
+# Predict the height of the athlete by their weight
+```{r}
+athlete_model <- 
+  filtered_data |> 
+  drop_na() |>
+  lm(height ~ weight, data = _)
+
+summary(athlete_model)
+
+check_model(athlete_model)
+```
+
+# Predict the year of olympic games by the athlete age, weight and height
+```{r}
+athlete_model <- 
+  filtered_data |> 
+  drop_na() |>
+  lm(year ~ age + weight + height, data = _)
+
+summary(athlete_model)
+
+check_model(athlete_model)
+# residuals show that model's weak point is predicting the extremes, which seems reasonable as year is a funny dependent variable for a linear regression
+```
+
+# Hypotheses: soccer, hockey, and water polo players are in different age, height, and weight
+
+# ANOVA
+```{r}
+water_polo <- "Water Polo Men's Water Polo"
+soccer <- "Football Men's Football"
+hockey <- "Hockey Men's Hockey"
+
+combined_data <- filtered_data |>
+  filter(event %in% c(water_polo, soccer, hockey)) |>
+  select(event, height, weight, age) |>
+  drop_na()
+
+anova_height <- aov(height ~ event, data = combined_data)
+summary(anova_height)
+
+anova_weight <- aov(weight ~ event, data = combined_data)
+summary(anova_weight)
+
+anova_age <- aov(age ~ event, data = combined_data)
+summary(anova_age)
+```
+
+# T-test
+```{r}
+water_polo_players <- filtered_data |>
+  filter(event == water_polo) |>
+  select(height, weight, age) |>
+  drop_na()
+
+soccer_players <- filtered_data |>
+  filter(event == soccer) |>
+  select(height, weight, age) |>
+  drop_na()
+
+hockey_players <- filtered_data |>
+  filter(event == hockey) |>
+  select(height, weight, age) |>
+  drop_na()
+
+t.test(water_polo_players$height, soccer_players$height) # >
+t.test(hockey_players$height, soccer_players$height) # <
+t.test(water_polo_players$height, hockey_players$height) # <
+
+t.test(water_polo_players$weight, soccer_players$weight) # >
+t.test(hockey_players$weight, soccer_players$weight) # no diff
+t.test(water_polo_players$weight, hockey_players$weight) # >
+
+t.test(water_polo_players$age, soccer_players$age) # >
+t.test(hockey_players$age, soccer_players$age) # >
+t.test(water_polo_players$age, hockey_players$age) # no diff
+
+
+
+ggplot(combined_data, aes(x = event, y = height, fill = event)) +
+  geom_boxplot() +
+  labs(title = "Height Distribution of Water Polo and Soccer Players",
+       x = NULL,
+       y = "Height") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+
+

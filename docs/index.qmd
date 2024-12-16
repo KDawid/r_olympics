@@ -9,7 +9,10 @@ editor_options:
 
 # Setup the project
 ```{r setup}
+library(car)
 library(correlation)
+library(knitr)
+library(lmtest)
 library(skimr)
 library(tidyverse)
 library(performance)
@@ -40,36 +43,41 @@ sort(unique(olympics_data$sport))
 sort(unique(olympics_data$medal))
 
 
-olympics_data |>
+kable(olympics_data |>
   group_by(games) |>
   slice(1)
+)
 
 skim(olympics_data)
 ```
+There are no invalid or suspicious values.
 
 # Number of event types of games by season
 ```{r}
-olympics_data |>
+kable(olympics_data |>
   filter(season == "Summer") |>
   group_by(sport) |>
   summarise(unique_event_count = n_distinct(event)) |>
   filter(unique_event_count >= 3) |>
   arrange(desc(unique_event_count))
+)
 
-olympics_data |>
+kable(olympics_data |>
   filter(season == "Winter") |>
   group_by(sport) |>
   summarise(unique_event_count = n_distinct(event)) |>
   filter(unique_event_count >= 3) |>
   arrange(desc(unique_event_count))
+)
 ```
 
 # Sports that were only for one year
 ```{r}
-olympics_data |>
+kable(olympics_data |>
   group_by(sport) |>
   summarise(year_count = n_distinct(year)) |>
   filter(year_count == 1)
+)
 
 #olympics_data |>
 #  group_by(event) |>
@@ -85,14 +93,16 @@ sport_games_count <- olympics_data |>
   arrange(desc(games_count)) |>
   filter(games_count >= 20)
 
-sport_games_count
 
-# keep events that were present in at least 20 games
+kable(sport_games_count)
+
 event_games_count <- olympics_data |>
   group_by(event) |>
   summarise(games_count = n_distinct(games)) |>
   arrange(desc(games_count)) |>
   filter(games_count >= 20)
+
+# keep events that were present in at least 20 games
 data <- olympics_data |>
   filter(sport %in% sport_games_count$sport)
 ```
@@ -114,7 +124,7 @@ for (season_value in unique(data$season)) {
            fill = "Medal Type") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      geom_text(stat = 'count', aes(label = ..count..), position = position_stack(vjust = 0.5), size = 2)
+      geom_text(stat = 'count', aes(label = after_stat(count)), position = position_stack(vjust = 0.5), size = 2)
   print(p)
 }
 ```
@@ -149,13 +159,13 @@ data |>
 data |>
   filter(noc == "HUN" & season == "Summer") |>
   group_by(year, medal) |>
-  summarise(count = n()) |>
+  summarise(count = n(), .groups = 'drop') |>
   spread(medal, count, fill = 0) |>
   ggplot() +
   aes(x = year) +
-  geom_line(aes(y = Gold, color = "Gold"), size = 1) +
-  geom_line(aes(y = Silver, color = "Silver"), size = 1) +
-  geom_line(aes(y = Bronze, color = "Bronze"), size = 1) +
+  geom_line(aes(y = Gold, color = "Gold"), linewidth = 1) +
+  geom_line(aes(y = Silver, color = "Silver"), linewidth = 1) +
+  geom_line(aes(y = Bronze, color = "Bronze"), linewidth = 1) +
   scale_color_manual(values = medal_colors) +
   labs(title = "Number of Medals by Year for Hungary (summer)",
        x = "Year",
@@ -166,7 +176,7 @@ data |>
 
 # Average age, height and weight of top 3 and others by sports
 ```{r}
-data |>
+kable(data |>
   group_by(sex, sport) |>
   summarise(
     average_age_top3 = mean(age[!is.na(medal)], na.rm = TRUE),
@@ -176,8 +186,9 @@ data |>
   ) |>
   filter(diff > 1) |>
   arrange(desc(diff))
+)
 
-data |>
+kable(data |>
   group_by(sex, sport) |>
   summarise(
     average_weight_top3 = mean(weight[!is.na(medal)], na.rm = TRUE),
@@ -187,8 +198,9 @@ data |>
   ) |>
   filter(diff > 2) |>
   arrange(desc(diff))
+)
 
-data |>
+kable(data |>
   group_by(sex, sport) |>
   summarise(
     average_height_top3 = mean(height[!is.na(medal)], na.rm = TRUE),
@@ -198,11 +210,12 @@ data |>
   ) |>
   filter(diff > 2) |>
   arrange(desc(diff))
+)
 ```
 
 # Average age, height and weight of top 3 and others by events
 ```{r}
-data |>
+kable(data |>
   group_by(sex, event) |>
   summarise(
     average_age_top3 = mean(age[!is.na(medal)], na.rm = TRUE),
@@ -211,9 +224,9 @@ data |>
     .groups = 'drop'
   ) |>
   filter(diff > 8) |>
-  arrange(desc(diff))
+  arrange(desc(diff)), format = "html", width = max)
 
-data |>
+kable(data |>
   group_by(sex, event) |>
   summarise(
     average_weight_top3 = mean(weight[!is.na(medal)], na.rm = TRUE),
@@ -223,8 +236,9 @@ data |>
   ) |>
   filter(diff > 10) |>
   arrange(desc(diff))
+)
 
-data |>
+kable(data |>
   group_by(sex, event) |>
   summarise(
     average_height_top3 = mean(height[!is.na(medal)], na.rm = TRUE),
@@ -234,31 +248,35 @@ data |>
   ) |>
   filter(diff > 10) |>
   arrange(desc(diff))
+)
 ```
 
 # Athletes winning medal in most different sports
 ```{r}
-data |>
+kable(data |>
   filter(!is.na(medal)) |>
   group_by(name) |>
   summarise(unique_event_count = n_distinct(event),
             unique_sports_list = paste(sort(unique(sport)), collapse = ", ")) |>
   filter(unique_event_count >= 7) |>
   arrange(desc(unique_event_count))
+)
 
-data |>
+# Check Carl, who won medal in the most unique events
+kable(data |>
   filter(name == "Carl Townsend Osburn") |>
   select(age, medal, noc, year, sport, event)
+)
 
-
-data |>
+# Check athletes who won golden medal in multiple sports
+kable(data |>
   filter(medal == "Gold") |>
   group_by(name) |>
   summarise(unique_sport_count = n_distinct(sport),
             unique_sport_list = paste(sort(unique(sport)), collapse = ", ")) |>
   filter(unique_sport_count >= 2) |>
   arrange(desc(unique_sport_count))
-
+)
 ```
 
 # Number of athletes by event and year of summer games
@@ -281,8 +299,9 @@ pivot_table <- pivot_table |>
 popular_games_pivot <- pivot_table |>
   filter(total_athletes >= 250 & total_years >= 15 & average_athletes >= 15)
 
-print(popular_games_pivot |>
-        select(event, total_athletes, total_years, average_athletes))
+kable(popular_games_pivot |>
+        select(event, total_athletes, total_years, average_athletes)
+)
 
 filtered_data <- summer_data |>
   semi_join(popular_games_pivot, by = "event")
@@ -305,35 +324,11 @@ filtered_data |>
 
 # Check correlation of athlete data
 ```{r}
-data |> 
+kable(data |> 
     select(age, weight, height) |> 
     correlation() |> 
     summary()
-```
-
-# Predict the height of the athlete by their weight
-```{r}
-athlete_model <- 
-  filtered_data |> 
-  drop_na() |>
-  lm(height ~ weight, data = _)
-
-summary(athlete_model)
-
-check_model(athlete_model)
-```
-
-# Predict the year of olympic games by the athlete age, weight and height
-```{r}
-athlete_model <- 
-  filtered_data |> 
-  drop_na() |>
-  lm(year ~ age + weight + height, data = _)
-
-summary(athlete_model)
-
-check_model(athlete_model)
-# residuals show that model's weak point is predicting the extremes, which seems reasonable as year is a funny dependent variable for a linear regression
+)
 ```
 
 # Hypotheses: soccer, hockey, and water polo players are in different age, height, and weight
@@ -392,7 +387,7 @@ t.test(water_polo_players$age, hockey_players$age) # no diff
 
 ggplot(combined_data, aes(x = event, y = height, fill = event)) +
   geom_boxplot() +
-  labs(title = "Height Distribution of Water Polo and Soccer Players",
+  labs(title = "Height Distribution of Soccer, Hockey, and  Water Polo Players",
        x = NULL,
        y = "Height") +
   theme_minimal() +
@@ -400,5 +395,182 @@ ggplot(combined_data, aes(x = event, y = height, fill = event)) +
 
 ```
 
+# Linear regression
+```{r}
+# Keep the rows where all the relevant data is available for model comparison
+
+model_data <- filtered_data |>
+  filter(!is.na(height) & !is.na(weight) & !is.na(age) & !is.na(sex) & !is.na(sport))
+```
+
+## Predict the height of the athlete by their weight
+Hypothesis: height and weight shall obviously correlate, but different sports require different body compositions, so model shall not be 100% accurate.
+```{r}
+simple_model <- model_data |>
+  lm(height ~ weight, data = _)
+
+summary(simple_model)
+check_model(simple_model)
+```
+Linear regression model is significant (F(1, 85946) = 174300, *p < 0.001*), and explains 67% of the variance (*R^2 = 0.6697*).
+
+## Checking outliers
+```{r}
+cooks_d <- cooks.distance(simple_model)
+plot(cooks_d, type = "h", main = "Cook's Distance", ylab = "Cook's Distance")
+threshold <- min(1, 4 / (nrow(model_data) - length(simple_model$coefficients)))
+abline(h = threshold, col = "red")
+
+influential <- which(cooks_d > threshold)
+print("Number of influential points based on Cook's Distance:")
+print(length(influential))
+
+# Drop outliars
+cleaned_model_data <- model_data[-influential, ]
+```
+
+# Predict the height the athlete by their weight, age, sex, and sport
+Hypothesis: age can change body composition, just as sex. Different sports require athletes to have different body metrics, so sport might help predicting the height of the athlete (as previously seen, hockey, water polo, and soccer players have significantly different height - probably because of selection pressure to reach the maximum efficiency of their sport).
+```{r}
+complex_model <- cleaned_model_data |>
+  lm(height ~ weight + age + sex + sport, data = _)
+
+summary(complex_model)
+check_model(complex_model)
+```
+Linear regression model is significant (F(17, 81019) = 19420, *p < 0.001*), and explains 80% of the variance (*R^2 = 0.8039*). All coefficients are significant, except "Modern Pentathlon" and "Rowing" sports.
+
+## Checking outliers
+```{r}
+cooks_d <- cooks.distance(complex_model)
+plot(cooks_d, type = "h", main = "Cook's Distance", ylab = "Cook's Distance")
+threshold <- min(1, 4 / (nrow(cleaned_model_data) - length(complex_model$coefficients)))
+abline(h = threshold, col = "red")
+
+influential <- which(cooks_d > threshold)
+print("Number of influential points based on Cook's Distance:")
+print(length(influential))
+
+# Drop outliars
+cleaned_model_data <- cleaned_model_data[-influential, ]
+```
+
+## Rebuild the models without the outliers
+```{r}
+new_simple_model <- cleaned_model_data |>
+  lm(height ~ weight, data = _)
+
+summary(new_simple_model)
+check_model(new_simple_model)
 
 
+new_complex_model <- cleaned_model_data |>
+  lm(height ~ weight + age + sex + sport, data = _)
+
+summary(new_complex_model)
+check_model(new_complex_model)
+```
+After dropping outliars, simple model explains 76%, complex model explains 84% of the variance.
+
+# Compare models
+```{r}
+anova(new_simple_model, new_complex_model)
+```
+ANOVA shows that adding extra variables improved the model significantly, so the complex model explains significantly more variability (*F(16) = 2263.3, p < 0.001*).
+
+# Independence of residuals
+```{r}
+# Durbin-Watson test
+dwtest(new_complex_model)
+hist(residuals(new_complex_model), main = "Histogram of Residuals", xlab = "Residuals", breaks = 20)
+```
+
+# Check normality of the residuals
+```{r}
+qqnorm(residuals(new_simple_model), main = "Q-Q Plot (Simple model)")
+qqline(residuals(new_simple_model), col = "red")
+```
+
+```{r}
+qqnorm(residuals(new_complex_model), main = "Q-Q Plot (Complex model)")
+qqline(residuals(new_complex_model), col = "red")
+```
+
+# Check the linearity assumption.
+```{r}
+plot(new_complex_model, which = 1, main = "Residuals vs Fitted")
+crPlots(new_complex_model)
+avPlots(new_complex_model)
+```
+
+# Check homoscedasticity
+```{r}
+# Breusch-Pagan test
+bptest(new_complex_model)
+
+# NCV test
+ncvTest(new_complex_model)
+```
+
+# Multicollinearity assumption
+```{r}
+vif_values <- vif(new_complex_model)
+print(vif_values)
+
+high_vif <- data.frame(vif_values) |>
+  filter(GVIF > 3)
+print("Predictors with high VIF:")
+print(high_vif)
+```
+
+# Model comparison
+```{r}
+new_simple_model <- cleaned_model_data |>
+  lm(height ~ weight, data = _)
+
+summary(new_simple_model)
+
+check_model(new_simple_model)
+
+anova(new_simple_model, new_complex_model)
+```
+
+```{r}
+simple_summary <- summary(new_simple_model)
+complex_summary <- summary(new_complex_model)
+
+# Extract key metrics for comparison
+simple_r_squared <- simple_summary$r.squared
+simple_adj_r_squared <- simple_summary$adj.r.squared
+simple_f_statistic <- simple_summary$fstatistic
+simple_residual_se <- simple_summary$sigma
+simple_aic <- AIC(new_simple_model)
+simple_bic <- BIC(new_simple_model)
+
+complex_r_squared <- complex_summary$r.squared
+complex_adj_r_squared <- complex_summary$adj.r.squared
+complex_f_statistic <- complex_summary$fstatistic
+complex_residual_se <- complex_summary$sigma
+complex_aic <- AIC(new_complex_model)
+complex_bic <- BIC(new_complex_model)
+
+# Reporting the results
+cat("Simple Model Summary:\n")
+cat("R-squared:", simple_r_squared, "\n")
+cat("Adjusted R-squared:", simple_adj_r_squared, "\n")
+cat("F-statistic:", simple_f_statistic[1], "on", simple_f_statistic[2], "and", simple_f_statistic[3], "DF, p-value:", pf(simple_f_statistic[1], simple_f_statistic[2], simple_f_statistic[3], lower.tail = FALSE), "\n")
+cat("Residual Standard Error:", simple_residual_se, "\n")
+cat("AIC value:", simple_aic, "\n")
+cat("BIC value:", simple_bic, "\n\n")
+
+
+cat("Complex Model Summary:\n")
+cat("R-squared:", complex_r_squared, "\n")
+cat("Adjusted R-squared:", complex_adj_r_squared, "\n")
+cat("F-statistic:", complex_f_statistic[1], "on", complex_f_statistic[2], "and", complex_f_statistic[3], "DF, p-value:", pf(complex_f_statistic[1], complex_f_statistic[2], complex_f_statistic[3], lower.tail = FALSE), "\n")
+cat("Residual Standard Error:", complex_residual_se, "\n")
+cat("AIC value:", complex_aic, "\n")
+cat("BIC value:", complex_bic, "\n\n")
+# Complex model explains more variance than simple model.
+# AIC and BIC also show that complex model is better.
+```

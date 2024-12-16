@@ -175,6 +175,7 @@ data |>
 
 # Average age, height and weight of top 3 and others by sports
 List the rows where average value of medalists differs the most from the other participants - it might help to find the secret of being successful in the given sport.
+
 ## Average age of medalists, and other athletes by sport and sex
 ```{r}
 kable(data |>
@@ -250,6 +251,7 @@ kable(data |>
 
 # Number of athletes by event and year of summer games
 ```{r}
+# Keep only summer games after 1950, as games before that year has much less data items.
 summer_data <- data |>
   filter(season == "Summer" & year > 1950)
 
@@ -464,7 +466,8 @@ check_model(new_complex_model)
 After dropping outliars, simple model explains 76%, complex model explains 84% of the variance. Both models are still statistically significant.
 
 # Independence of residuals
-##Simple model
+
+## Simple model
 ```{r}
 # Durbin-Watson test
 dwtest(new_simple_model)

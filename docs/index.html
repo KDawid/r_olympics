@@ -2013,7 +2013,9 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 </section>
 <section id="average-age-height-and-weight-of-top-3-and-others-by-sports" class="level1">
 <h1>Average age, height and weight of top 3 and others by sports</h1>
-<p>List the rows where average value of medalists differs the most from the other participants - it might help to find the secret of being successful in the given sport. ## Average age of medalists, and other athletes by sport and sex</p>
+<p>List the rows where average value of medalists differs the most from the other participants - it might help to find the secret of being successful in the given sport.</p>
+<section id="average-age-of-medalists-and-other-athletes-by-sport-and-sex" class="level2">
+<h2 class="anchored" data-anchor-id="average-age-of-medalists-and-other-athletes-by-sport-and-sex">Average age of medalists, and other athletes by sport and sex</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(data <span class="sc">|&gt;</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex, sport) <span class="sc">|&gt;</span></span>
@@ -2133,6 +2135,7 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 </table>
 </div>
 </div>
+</section>
 <section id="average-weight-of-medalists-and-other-athletes-by-sport-and-sex" class="level2">
 <h2 class="anchored" data-anchor-id="average-weight-of-medalists-and-other-athletes-by-sport-and-sex">Average weight of medalists, and other athletes by sport and sex</h2>
 <div class="cell">
@@ -2780,19 +2783,20 @@ $ medal  &lt;chr&gt; NA, NA, NA, "Gold", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
 <section id="number-of-athletes-by-event-and-year-of-summer-games" class="level1">
 <h1>Number of athletes by event and year of summer games</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>summer_data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="st">"Summer"</span> <span class="sc">&amp;</span> year <span class="sc">&gt;</span> <span class="dv">1950</span>)</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>pivot_table <span class="ot">&lt;-</span> summer_data <span class="sc">|&gt;</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event, year) <span class="sc">|&gt;</span></span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">athletes =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(year, athletes)</span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>pivot_table <span class="ot">&lt;-</span> pivot_table <span class="sc">|&gt;</span></span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total_athletes =</span> <span class="fu">rowSums</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">total_years =</span> <span class="fu">rowSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event))),</span>
-<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">average_athletes =</span> <span class="fu">rowMeans</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only summer games after 1950, as games before that year has much less data items.</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>summer_data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="st">"Summer"</span> <span class="sc">&amp;</span> year <span class="sc">&gt;</span> <span class="dv">1950</span>)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>pivot_table <span class="ot">&lt;-</span> summer_data <span class="sc">|&gt;</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event, year) <span class="sc">|&gt;</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">athletes =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(year, athletes)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>pivot_table <span class="ot">&lt;-</span> pivot_table <span class="sc">|&gt;</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total_athletes =</span> <span class="fu">rowSums</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">total_years =</span> <span class="fu">rowSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event))),</span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">average_athletes =</span> <span class="fu">rowMeans</span>(<span class="fu">select</span>(pivot_table, <span class="sc">-</span>event), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="keep-events-where-at-least-250-athletes-competed-over-15-years-average-15-athletes-per-year" class="level2">
 <h2 class="anchored" data-anchor-id="keep-events-where-at-least-250-athletes-competed-over-15-years-average-15-athletes-per-year">Keep events where at least 250 athletes competed over 15+ years, average 15+ athletes per year</h2>
@@ -4061,7 +4065,8 @@ F-statistic: 2.33e+04 on 17 and 76774 DF,  p-value: &lt; 2.2e-16</code></pre>
 </section>
 <section id="independence-of-residuals" class="level1">
 <h1>Independence of residuals</h1>
-<p>##Simple model</p>
+<section id="simple-model" class="level2">
+<h2 class="anchored" data-anchor-id="simple-model">Simple model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Durbin-Watson test</span></span>
 <span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(new_simple_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4082,6 +4087,7 @@ alternative hypothesis: true autocorrelation is greater than 0</code></pre>
 </div>
 </div>
 </div>
+</section>
 <section id="complex-model" class="level2">
 <h2 class="anchored" data-anchor-id="complex-model">Complex model</h2>
 <div class="cell">
@@ -4132,8 +4138,8 @@ alternative hypothesis: true autocorrelation is greater than 0</code></pre>
 </section>
 <section id="check-the-linearity-assumption." class="level1">
 <h1>Check the linearity assumption.</h1>
-<section id="simple-model" class="level2">
-<h2 class="anchored" data-anchor-id="simple-model">Simple model</h2>
+<section id="simple-model-1" class="level2">
+<h2 class="anchored" data-anchor-id="simple-model-1">Simple model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(new_simple_model, <span class="at">which =</span> <span class="dv">1</span>, <span class="at">main =</span> <span class="st">"Residuals vs Fitted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -4200,8 +4206,8 @@ alternative hypothesis: true autocorrelation is greater than 0</code></pre>
 </section>
 <section id="check-homoscedasticity" class="level1">
 <h1>Check homoscedasticity</h1>
-<section id="simple-model-1" class="level2">
-<h2 class="anchored" data-anchor-id="simple-model-1">Simple model</h2>
+<section id="simple-model-2" class="level2">
+<h2 class="anchored" data-anchor-id="simple-model-2">Simple model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breusch-Pagan test</span></span>
 <span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(new_simple_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

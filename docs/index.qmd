@@ -286,7 +286,7 @@ filtered_data <- summer_data |>
 filtered_data |>
   filter(medal == "Gold") |>
   group_by(year, sex) |>
-  summarise(avg_age = mean(age, na.rm = TRUE)) |>
+  summarise(avg_age = mean(age, na.rm = TRUE), .groups = "drop") |>
   ungroup() |>
   ggplot() +
   aes(x = year, y = avg_age, color = sex, fill = sex) +
@@ -328,7 +328,7 @@ summary(anova_age)
 ```
 All models are statistically significant, so we ignore null hípothesis.
 
-# T-test
+# T-tests
 ```{r}
 water_polo_players <- filtered_data |>
   filter(event == water_polo) |>
